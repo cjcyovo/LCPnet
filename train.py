@@ -120,11 +120,8 @@ def  train(epoch, model, num_epoch, label_name, label_queue):
         optimizer.zero_grad()
         text1 = torch.cat([clip.tokenize(f'A hyperspectral image of {label_name[k]}').to(k.device) for k in label_src])
         text_queue_1 = [label_queue[label_name[k]][0] for k in label_src]
-        # text_queue_2 = [label_queue[label_name[k]][1] for k in label_src]
         text = torch.cat([clip.tokenize(k).to(text1.device) for k in text_queue_1])
-        # text_queue_2 = torch.cat([clip.tokenize(k).to(text.device) for k in text_queue_2])
         loss_coarse2d, loss_coarse3d, label_src_pred = model(data_src, text, label_src)
-        # loss_coarse2d, label_src_pred = model(data_src, text, label_src)
         loss_cls = F.nll_loss(F.log_softmax(label_src_pred, dim=1), label_src.long())
         loss = loss_cls + args.lambda_1*(args.alpha*loss_coarse2d+(1-args.alpha)*loss_coarse3d)
 
@@ -176,8 +173,7 @@ def test(model, label_name):
 
 if __name__ == '__main__':
 
-    args.save_path = os.path.join(args.save_path)
-    # args.save_path = os.path.join(args.save_path, args.source_name+'to'+args.target_name)
+    args.save_path = os.path.join(args.save_path, args.source_name+'to'+args.target_name)
     acc_test_list, acc_maxval_test_list = np.zeros([args.num_trials, 1]), np.zeros([args.num_trials, 1])
     seed_worker(args.seed)
 
@@ -248,9 +244,7 @@ if __name__ == '__main__':
     model = LDGnet(embed_dim,
                    img_src.shape[-1], hyperparams['patch_size'], gt_src.max(),
                    context_length, vocab_size, transformer_width, transformer_heads, transformer_layers).to(DEVICE)
-    # model = presnet(512, 96, 4, 1, 1, context_length=77,
-    #                 vocab_size=49408, transformer_width=512, transformer_heads=8, transformer_layers=3).to(DEVICE)
-    print(model)
+ 
     for key in ["input_resolution", "context_length", "vocab_size"]:
         if key in pretrained_dict:
             del pretrained_dict[key]
@@ -264,9 +258,6 @@ if __name__ == '__main__':
 
     now_time = datetime.now()
     time_str = datetime.strftime(now_time, '%m-%d_%H-%M-%S')
-    # log_dir = os.path.join(args.save_path, time_str+'_lr_'+str(args.lr)+'_lam1_'+str(args.lambda_1)+'_alpha_'+str(args.alpha))
-    # if not os.path.exists(log_dir):
-    #     os.makedirs(log_dir)
 
     for epoch in range(1, args.num_epoch + 1):
         t1 = time.time()
