@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from PIL import Image
 
-parser = argparse.ArgumentParser(description='PyTorch LDGnet')
+parser = argparse.ArgumentParser(description='PyTorch LCPnet')
 
 parser.add_argument('--save_path', type=str, default="./results/",
                     help='the path to save the model')
